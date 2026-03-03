@@ -64,7 +64,7 @@ export const Customers = () => {
           <span>{data?.sourceNote}</span>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
           {[
             { label: 'TrustScore', value: data?.overview?.trustScore, sub: data?.overview?.ratingLabel || 'Great' },
             { label: 'Total Reviews', value: data?.overview?.totalReviews?.toLocaleString(), sub: 'Verified reviews' },
@@ -106,7 +106,7 @@ export const Customers = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <SectionHeader>Top Praise Themes</SectionHeader>
             <div style={{ background: '#111111', border: '1px solid #1A1A1A' }}>

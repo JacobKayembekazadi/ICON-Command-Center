@@ -71,7 +71,7 @@ export const Inventory = () => {
           <div style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)', padding: '12px 16px', color: '#ef4444', fontSize: '12px' }}>{error}</div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
           {[
             { label: 'Total SKUs', value: data?.totalProducts, sub: 'Active catalog' },
             { label: 'Avg Price', value: `€${data?.stats?.avgPrice}`, sub: 'Mid-premium' },
@@ -97,7 +97,7 @@ export const Inventory = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 md:grid-cols-3 gap-6">
           <Card title="Category Breakdown" className="lg:col-span-1">
             <div className="space-y-0">
               {typeCategories.slice(0, 10).map(([type, d]: any) => (

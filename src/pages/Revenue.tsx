@@ -65,7 +65,7 @@ export const Revenue = () => {
           <span>{data?.methodology}</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px" style={{ background: '#1A1A1A' }}>
+        <div className="grid grid-cols-1 md:grid-cols-1 md:grid-cols-3 gap-px" style={{ background: '#1A1A1A' }}>
           {[
             { label: data?.annualRevenueEstimate?.label, value: data?.annualRevenueEstimate?.value, sub: `Source: ${data?.annualRevenueEstimate?.source}` },
             { label: 'Monthly Revenue (est.)', value: data?.monthlyEstimates?.totalRevenue?.label, sub: `Online: ${data?.monthlyEstimates?.onlineRevenue?.label}` },
@@ -89,7 +89,7 @@ export const Revenue = () => {
         <div>
           <SectionHeader>Monthly Revenue Trend (€M)</SectionHeader>
           <div style={{ background: '#111111', border: '1px solid #1A1A1A', padding: '24px', height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <div className="w-full overflow-x-auto"><ResponsiveContainer width="100%" height="100%">
               <BarChart data={trendData} barCategoryGap="30%">
                 <XAxis dataKey="month" tick={{ fill: '#444444', fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: '#444444', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `€${v}M`} />
@@ -99,7 +99,7 @@ export const Revenue = () => {
                 <Bar dataKey="low" fill="#333333" radius={[0, 0, 0, 0]} />
                 <Bar dataKey="high" fill="#C9A84C" radius={[0, 0, 0, 0]} />
               </BarChart>
-            </ResponsiveContainer>
+            </ResponsiveContainer></div>
           </div>
         </div>
 
@@ -129,7 +129,7 @@ export const Revenue = () => {
 
         <div>
           <SectionHeader>Public Signals Used</SectionHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-px" style={{ background: '#1A1A1A' }}>
+          <div className="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 gap-px" style={{ background: '#1A1A1A' }}>
             {data?.signals?.map((s: any, i: number) => (
               <div key={i} style={{ background: '#111111', padding: '16px 20px' }}>
                 <div className="flex items-start justify-between gap-4">

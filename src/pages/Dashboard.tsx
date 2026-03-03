@@ -134,7 +134,7 @@ export const Dashboard = () => {
           <>
             <div>
               <SectionHeader>Key Metrics</SectionHeader>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
                 <MetricCard title="Annual Revenue" value={metrics?.annualRevenue || '$30M'} sub="Brand-reported" />
                 <MetricCard title="Monthly Revenue" value={metrics?.monthlyRevenue || '€1.8M–€3.2M'} sub="Estimated" />
                 <MetricCard title="Product Catalog" value={`${metrics?.totalProducts || 256} SKUs`} sub={`Avg €${metrics?.avgPrice || 53}`} />
@@ -178,7 +178,7 @@ export const Dashboard = () => {
             {/* Quick links */}
             <div>
               <SectionHeader>External References</SectionHeader>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
                 {[
                   { label: 'ICON Amsterdam', url: 'https://iconamsterdam.com', desc: 'Official website' },
                   { label: 'Instagram', url: 'https://instagram.com/iconamsterdam', desc: '134K+ followers' },

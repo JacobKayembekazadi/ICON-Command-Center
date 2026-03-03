@@ -66,7 +66,7 @@ export const Ads = () => {
           <span>{data?.sourceNote}</span>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
           {[
             { label: 'Active Ads (est.)', value: data?.overview?.estimatedActiveAds },
             { label: 'Monthly Spend (est.)', value: data?.overview?.estimatedMonthlySpend },
@@ -91,7 +91,7 @@ export const Ads = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <SectionHeader>Platform Distribution</SectionHeader>
             <div style={{ background: '#111111', border: '1px solid #1A1A1A' }}>
