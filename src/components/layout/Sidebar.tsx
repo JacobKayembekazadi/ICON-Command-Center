@@ -1,51 +1,49 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Package, TrendingUp, Users, Megaphone, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const Sidebar = () => {
   const links = [
-    { to: '/', icon: Home, label: 'Dashboard' },
-    { to: '/inventory', icon: Package, label: 'Inventory' },
-    { to: '/revenue', icon: TrendingUp, label: 'Revenue' },
-    { to: '/customers', icon: Users, label: 'Customers' },
-    { to: '/ads', icon: Megaphone, label: 'Ads' },
+    { to: '/', label: 'Dashboard' },
+    { to: '/inventory', label: 'Inventory' },
+    { to: '/revenue', label: 'Revenue' },
+    { to: '/customers', label: 'Customers' },
+    { to: '/ads', label: 'Ads' },
   ];
 
   return (
-    <aside className="w-64 fixed inset-y-0 left-0 bg-[#0A0E27] border-r border-[#2d3548] flex flex-col z-40">
-      <div className="h-16 flex items-center px-6 border-b border-[#2d3548]">
-        <div className="w-8 h-8 bg-[#00D9FF] rounded-lg mr-3 flex items-center justify-center">
-          <span className="font-bold text-[#0A0E27]">I</span>
+    <aside className="w-52 fixed inset-y-0 left-0 flex flex-col z-40" style={{ background: '#080808', borderRight: '1px solid #1A1A1A' }}>
+      <div className="px-6 pt-8 pb-6" style={{ borderBottom: '1px solid #1A1A1A' }}>
+        <div style={{ fontFamily: "'Playfair Display', serif", color: '#C9A84C', fontSize: '1.25rem', fontWeight: 600, letterSpacing: '0.05em' }}>
+          ICON
         </div>
-        <span className="font-bold text-xl tracking-tight">ICON<span className="text-[#00D9FF]">.CC</span></span>
+        <div style={{ color: '#444444', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '2px' }}>
+          Command Center
+        </div>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-8 space-y-1">
         {links.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
+            end={link.to === '/'}
             className={({ isActive }) => cn(
-              "flex items-center px-4 py-3 rounded-lg transition-all duration-200 group",
-              isActive 
-                ? "bg-[#00D9FF]/10 text-[#00D9FF]" 
-                : "text-gray-400 hover:bg-[#1a1f3a] hover:text-white"
+              "block px-3 py-2.5 transition-all duration-150",
+              isActive
+                ? "border-l-2 border-[#C9A84C] text-white pl-2.5"
+                : "border-l-2 border-transparent text-[#555555] hover:text-[#AAAAAA] pl-2.5"
             )}
+            style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase' }}
           >
-            <link.icon className="w-5 h-5 mr-3" />
-            <span className="font-medium">{link.label}</span>
+            {link.label}
           </NavLink>
         ))}
       </nav>
 
-      <div className="p-4 border-t border-[#2d3548]">
-        <div className="flex items-center px-4 py-3 text-gray-400 hover:text-white cursor-pointer transition-colors">
-          <Settings className="w-5 h-5 mr-3" />
-          <span className="font-medium">Settings</span>
-        </div>
-        <div className="mt-4 px-4">
-          <div className="text-xs text-gray-600">v1.0.0 • Stable</div>
+      <div className="px-6 py-5" style={{ borderTop: '1px solid #1A1A1A' }}>
+        <div style={{ color: '#333333', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          Sloe Labs
         </div>
       </div>
     </aside>

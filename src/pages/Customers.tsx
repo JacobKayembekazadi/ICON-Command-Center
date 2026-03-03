@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Card } from '@/components/ui/Card';
 import { fetchReviews, fetchInsight } from '@/lib/liveData';
-import { Star, TrendingUp, TrendingDown, MessageSquare, Sparkles, RefreshCw, ExternalLink, Info } from 'lucide-react';
+import { RefreshCw, ExternalLink, Info } from 'lucide-react';
 
-const StarRating = ({ stars, size = 'sm' }: { stars: number; size?: 'sm' | 'lg' }) => (
-  <div className="flex gap-0.5">
-    {[1, 2, 3, 4, 5].map(s => (
-      <Star key={s} className={`${size === 'lg' ? 'w-6 h-6' : 'w-4 h-4'} ${s <= stars ? 'text-amber-400 fill-amber-400' : 'text-gray-600'}`} />
-    ))}
-  </div>
+const SectionHeader = ({ children }: { children: React.ReactNode }) => (
+  <h2 style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#555555', borderLeft: '2px solid #C9A84C', paddingLeft: '12px', marginBottom: '16px' }}>
+    {children}
+  </h2>
 );
 
 export const Customers = () => {
@@ -39,166 +37,133 @@ export const Customers = () => {
   if (loading) return (
     <Layout>
       <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <RefreshCw className="w-8 h-8 text-[#00D9FF] animate-spin mx-auto mb-3" />
-          <p className="text-gray-400">Loading customer intelligence...</p>
-        </div>
+        <RefreshCw className="w-6 h-6 animate-spin" style={{ color: '#C9A84C' }} />
       </div>
     </Layout>
   );
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-8">
+        <div className="flex items-end justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Customer Intelligence</h1>
-            <p className="text-sm text-gray-400 mt-1">
-              <span className="inline-flex items-center gap-1 text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-full px-2 py-0.5">
-                Manually sourced
-              </span>
-              {' · '}
-              <a href={data?.trustpilotUrl} target="_blank" rel="noopener noreferrer"
-                className="text-[#00D9FF] hover:underline inline-flex items-center gap-1 text-xs">
-                Trustpilot profile <ExternalLink className="w-3 h-3" />
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.75rem', fontWeight: 500, color: '#F5F5F5' }}>
+              Customer Intelligence
+            </h1>
+            <p style={{ fontSize: '11px', color: '#444444', marginTop: '4px' }}>
+              Manual sourcing ·{' '}
+              <a href={data?.trustpilotUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#C9A84C', textDecoration: 'none' }}>
+                Trustpilot profile
               </a>
             </p>
           </div>
         </div>
 
-        <div className="flex items-start gap-2 text-xs text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-          <Info className="w-4 h-4 shrink-0 mt-0.5" />
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'rgba(201,168,76,0.05)', border: '1px solid rgba(201,168,76,0.2)', padding: '12px 16px', fontSize: '12px', color: '#888888' }}>
+          <Info style={{ width: 14, height: 14, flexShrink: 0, marginTop: 1, color: '#C9A84C' }} />
           <span>{data?.sourceNote}</span>
         </div>
 
-        {/* Overview cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="p-5 border-l-4 border-l-amber-400">
-            <p className="text-gray-400 text-sm mb-2">TrustScore</p>
-            <p className="text-3xl font-bold text-white">{data?.overview?.trustScore}</p>
-            <StarRating stars={data?.overview?.starRating || 4} />
-          </Card>
-          <Card className="p-5 border-l-4 border-l-[#00D9FF]">
-            <p className="text-gray-400 text-sm mb-2">Total Reviews</p>
-            <p className="text-3xl font-bold text-white">{data?.overview?.totalReviews?.toLocaleString()}</p>
-            <p className="text-xs text-gray-500 mt-1">{data?.overview?.ratingLabel}</p>
-          </Card>
-          <Card className="p-5 border-l-4 border-l-green-500">
-            <p className="text-gray-400 text-sm mb-2">Positive Sentiment</p>
-            <p className="text-3xl font-bold text-white">{data?.sentiment?.positive}%</p>
-            <p className="text-xs text-gray-500 mt-1">of all reviews</p>
-          </Card>
-          <Card className="p-5 border-l-4 border-l-purple-500">
-            <p className="text-gray-400 text-sm mb-2">NPS Estimate</p>
-            <p className="text-3xl font-bold text-white">{data?.sentiment?.npsEstimate}</p>
-            <p className="text-xs text-gray-500 mt-1">{data?.sentiment?.npsLabel} (industry avg: 30)</p>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px" style={{ background: '#1A1A1A' }}>
+          {[
+            { label: 'TrustScore', value: data?.overview?.trustScore, sub: data?.overview?.ratingLabel || 'Great' },
+            { label: 'Total Reviews', value: data?.overview?.totalReviews?.toLocaleString(), sub: 'Verified reviews' },
+            { label: 'Positive Sentiment', value: `${data?.sentiment?.positive}%`, sub: 'of all reviews' },
+            { label: 'NPS Estimate', value: data?.sentiment?.npsEstimate, sub: `${data?.sentiment?.npsLabel} (avg: 30)` },
+          ].map((m, i) => (
+            <div key={i} style={{ background: '#111111', borderTop: '1px solid #C9A84C', padding: '20px' }}>
+              <p style={{ fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#555555', marginBottom: '8px' }}>{m.label}</p>
+              <p style={{ fontSize: '1.75rem', fontWeight: 300, color: '#F5F5F5' }}>{m.value}</p>
+              <p style={{ fontSize: '11px', color: '#444444', marginTop: '4px' }}>{m.sub}</p>
+            </div>
+          ))}
         </div>
 
-        {/* AI Insight */}
         {insight && (
-          <Card className="p-5 border border-[#00D9FF]/20 bg-[#00D9FF]/5">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-4 h-4 text-[#00D9FF]" />
-              <h3 className="text-sm font-medium text-[#00D9FF]">Gemini Customer Intelligence</h3>
-            </div>
-            <p className="text-gray-300 text-sm leading-relaxed">{insight}</p>
-          </Card>
+          <div style={{ background: '#111111', border: '1px solid #1A1A1A', borderLeft: '2px solid #C9A84C', padding: '20px' }}>
+            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '10px' }}>Gemini Customer Intelligence</p>
+            <p style={{ color: '#AAAAAA', fontSize: '13px', lineHeight: 1.7 }}>{insight}</p>
+          </div>
         )}
 
-        {/* Rating distribution */}
-        <Card title="Rating Distribution">
-          <div className="space-y-3 mt-2">
+        <div>
+          <SectionHeader>Rating Distribution</SectionHeader>
+          <div style={{ background: '#111111', border: '1px solid #1A1A1A', padding: '20px' }}>
             {data?.distribution?.slice().reverse().map((d: any) => (
-              <div key={d.stars} className="flex items-center gap-3">
-                <div className="flex items-center gap-1 w-16 shrink-0">
-                  <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                  <span className="text-gray-400 text-sm">{d.stars}</span>
+              <div key={d.stars} className="flex items-center gap-4 mb-3">
+                <span style={{ color: '#555555', fontSize: '12px', width: 40, flexShrink: 0 }}>{d.stars} star</span>
+                <div style={{ flex: 1, height: 2, background: '#1A1A1A', overflow: 'hidden' }}>
+                  <div style={{
+                    height: '100%',
+                    width: `${d.percentage}%`,
+                    background: d.stars >= 4 ? '#C9A84C' : d.stars === 3 ? '#888888' : '#333333',
+                    transition: 'width 0.7s ease',
+                  }} />
                 </div>
-                <div className="flex-1 h-3 bg-[#2d3548] rounded-full overflow-hidden">
-                  <div 
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{ 
-                      width: `${d.percentage}%`,
-                      backgroundColor: d.stars >= 4 ? '#22c55e' : d.stars === 3 ? '#f59e0b' : '#ef4444'
-                    }}
-                  />
-                </div>
-                <span className="text-gray-400 text-sm w-16 text-right">{d.percentage}% ({d.count})</span>
+                <span style={{ color: '#444444', fontSize: '11px', width: 80, textAlign: 'right', flexShrink: 0 }}>{d.percentage}% ({d.count})</span>
               </div>
             ))}
           </div>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Praise themes */}
-          <Card title="Top Praise Themes">
-            <div className="space-y-3 mt-2">
-              {data?.topPraiseThemes?.map((t: any, i: number) => (
-                <div key={i} className="p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-4 h-4 text-green-400" />
-                      <span className="text-white text-sm font-medium">{t.theme}</span>
-                    </div>
-                    <span className="text-green-400 text-xs">{t.mentions} mentions</span>
-                  </div>
-                  <p className="text-gray-400 text-xs italic">"{t.example}"</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          {/* Complaint themes */}
-          <Card title="Top Complaint Themes">
-            <div className="space-y-3 mt-2">
-              {data?.topComplaintThemes?.map((t: any, i: number) => (
-                <div key={i} className="p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <TrendingDown className="w-4 h-4 text-red-400" />
-                      <span className="text-white text-sm font-medium">{t.theme}</span>
-                    </div>
-                    <span className="text-red-400 text-xs">{t.mentions} mentions</span>
-                  </div>
-                  <p className="text-gray-400 text-xs italic">"{t.example}"</p>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
 
-        {/* Recent reviews */}
-        <Card title="Recent Reviews">
-          <div className="space-y-3 mt-2">
-            {data?.recentReviews?.map((r: any, i: number) => (
-              <div key={i} className="flex items-start gap-3 p-3 bg-[#1a1f3a] rounded-lg">
-                <MessageSquare className="w-4 h-4 text-gray-500 mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <StarRating stars={r.stars} />
-                    <span className="text-gray-500 text-xs">{r.country} · {r.date}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <SectionHeader>Top Praise Themes</SectionHeader>
+            <div style={{ background: '#111111', border: '1px solid #1A1A1A' }}>
+              {data?.topPraiseThemes?.map((t: any, i: number) => (
+                <div key={i} className="px-5 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span style={{ color: '#F5F5F5', fontSize: '12px' }}>{t.theme}</span>
+                    <span style={{ color: '#C9A84C', fontSize: '11px' }}>{t.mentions} mentions</span>
                   </div>
-                  <p className="text-gray-300 text-sm">"{r.text}"</p>
+                  <p style={{ color: '#555555', fontSize: '11px', fontStyle: 'italic' }}>"{t.example}"</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </Card>
 
-        {/* Key insights */}
-        <Card title="Analyst Insights">
-          <div className="space-y-3 mt-2">
-            {data?.keyInsights?.map((item: string, i: number) => (
-              <div key={i} className="flex items-start gap-3 p-3 bg-[#1a1f3a] rounded-lg">
-                <div className="w-6 h-6 rounded-full bg-[#00D9FF]/20 flex items-center justify-center shrink-0">
-                  <span className="text-[#00D9FF] text-xs font-bold">{i + 1}</span>
+          <div>
+            <SectionHeader>Top Complaint Themes</SectionHeader>
+            <div style={{ background: '#111111', border: '1px solid #1A1A1A' }}>
+              {data?.topComplaintThemes?.map((t: any, i: number) => (
+                <div key={i} className="px-5 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span style={{ color: '#F5F5F5', fontSize: '12px' }}>{t.theme}</span>
+                    <span style={{ color: '#888888', fontSize: '11px' }}>{t.mentions} mentions</span>
+                  </div>
+                  <p style={{ color: '#555555', fontSize: '11px', fontStyle: 'italic' }}>"{t.example}"</p>
                 </div>
-                <p className="text-gray-300 text-sm">{item}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <SectionHeader>Recent Reviews</SectionHeader>
+          <div style={{ background: '#111111', border: '1px solid #1A1A1A' }}>
+            {data?.recentReviews?.map((r: any, i: number) => (
+              <div key={i} className="px-5 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
+                <div className="flex items-center gap-3 mb-2">
+                  <span style={{ color: '#C9A84C', fontSize: '12px' }}>{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</span>
+                  <span style={{ color: '#444444', fontSize: '11px' }}>{r.country} · {r.date}</span>
+                </div>
+                <p style={{ color: '#AAAAAA', fontSize: '13px', lineHeight: 1.6 }}>"{r.text}"</p>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
+
+        <div>
+          <SectionHeader>Analyst Insights</SectionHeader>
+          <div style={{ background: '#111111', border: '1px solid #1A1A1A' }}>
+            {data?.keyInsights?.map((item: string, i: number) => (
+              <div key={i} className="flex items-start gap-4 px-6 py-4" style={{ borderBottom: '1px solid #1A1A1A' }}>
+                <span style={{ color: '#C9A84C', fontSize: '11px', fontWeight: 500, width: 20, flexShrink: 0 }}>0{i + 1}</span>
+                <p style={{ color: '#AAAAAA', fontSize: '13px', lineHeight: 1.6 }}>{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </Layout>
   );

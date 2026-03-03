@@ -5,7 +5,6 @@ import { Inventory } from '@/pages/Inventory';
 import { Revenue } from '@/pages/Revenue';
 import { Customers } from '@/pages/Customers';
 import { Ads } from '@/pages/Ads';
-import { ChatWidget } from '@/components/chat/ChatWidget';
 
 function App() {
   return (
@@ -17,7 +16,6 @@ function App() {
         <Route path="/customers" element={<Customers />} />
         <Route path="/ads" element={<Ads />} />
       </Routes>
-      <ChatWidget />
     </Router>
   );
 }

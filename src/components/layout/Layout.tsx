@@ -7,10 +7,10 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-[#0A0E27] text-white">
+    <div className="min-h-screen" style={{ background: '#080808', color: '#AAAAAA' }}>
       <Sidebar />
-      <main className="pl-64 min-h-screen">
-        <div className="max-w-7xl mx-auto p-8">
+      <main className="pl-52 min-h-screen">
+        <div className="max-w-6xl mx-auto p-10">
           {children}
         </div>
       </main>

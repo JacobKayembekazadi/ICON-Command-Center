@@ -6,7 +6,7 @@ interface CategoryPieChartProps {
   data: any[];
 }
 
-const COLORS = ['#00D9FF', '#3B82F6', '#8B5CF6', '#EC4899', '#10B981'];
+const COLORS = ['#C9A84C', '#8B7435', '#5A4E2A', '#2A2A2A', '#3A3A3A'];
 
 export const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data }) => {
   return (
@@ -19,7 +19,7 @@ export const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data }) => {
             cy="50%"
             innerRadius={60}
             outerRadius={100}
-            paddingAngle={5}
+            paddingAngle={3}
             dataKey="value"
           >
             {data.map((entry, index) => (
@@ -27,10 +27,10 @@ export const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data }) => {
             ))}
           </Pie>
           <Tooltip 
-            contentStyle={{ backgroundColor: '#1a1f3a', borderColor: '#2d3548', color: '#fff' }}
-            itemStyle={{ color: '#fff' }}
+            contentStyle={{ background: '#111111', border: '1px solid #C9A84C', color: '#F5F5F5', borderRadius: 0 }}
+            itemStyle={{ color: '#F5F5F5' }}
           />
-          <Legend verticalAlign="bottom" height={36} />
+          <Legend verticalAlign="bottom" height={36} wrapperStyle={{ color: '#555555', fontSize: '11px' }} />
         </PieChart>
       </ResponsiveContainer>
     </Card>
