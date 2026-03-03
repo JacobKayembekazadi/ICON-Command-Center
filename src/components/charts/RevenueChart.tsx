@@ -1,6 +1,5 @@
 import React from 'react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
-import { Card } from '@/components/ui/Card';
 import { formatCurrency } from '@/lib/utils';
 
 interface RevenueChartProps {
@@ -9,7 +8,8 @@ interface RevenueChartProps {
 
 export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
   return (
-    <Card title="Revenue Trend (90 Days)" className="h-[400px]">
+    <div style={{ background: '#111111', border: '1px solid #1A1A1A', padding: '20px 24px' }}>
+      <p style={{ fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#555555', borderLeft: '1px solid #C9A84C', paddingLeft: '12px', marginBottom: '20px' }}>Revenue Trend (90 Days)</p>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
@@ -49,6 +49,6 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </Card>
+    </div>
   );
 };
