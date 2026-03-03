@@ -146,7 +146,7 @@ export const Dashboard = () => {
               </div>
             </div>
 
-            {/* Gemini insight */}
+            {/* ICON Intelligence */}
             <div>
               <SectionHeader>AI Intelligence Summary</SectionHeader>
               <div style={{ background: '#111111', border: '1px solid #1A1A1A', borderLeft: '2px solid #C9A84C', padding: '24px' }}>
@@ -170,7 +170,7 @@ export const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p style={{ color: '#444444', fontSize: '12px' }}>Configure VITE_GEMINI_API_KEY in Vercel to enable AI insights.</p>
+                  <p style={{ color: '#444444', fontSize: '12px' }}>ICON Intelligence is initialising...</p>
                 )}
               </div>
             </div>

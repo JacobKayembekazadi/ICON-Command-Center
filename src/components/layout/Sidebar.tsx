@@ -42,9 +42,7 @@ export const Sidebar = () => {
       </nav>
 
       <div className="px-6 py-5" style={{ borderTop: '1px solid #1A1A1A' }}>
-        <div style={{ color: '#333333', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-          Sloe Labs
-        </div>
+        <div style={{ color: '#333333', fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Powered by Sloe OS</div>
       </div>
     </aside>
   );
