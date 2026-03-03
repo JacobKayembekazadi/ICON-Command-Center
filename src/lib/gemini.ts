@@ -1,89 +1,63 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+// All Gemini calls are proxied server-side — key never exposed in bundle
 
-const apiKey = (import.meta.env.VITE_GEMINI_API_KEY as string) || 'AIzaSyD5wDwGbPI5MD8clpD40b5AePfUYYTAdB8';
-
-let genAI: GoogleGenerativeAI | null = null;
-
-if (apiKey && apiKey !== 'dummy_key') {
-  genAI = new GoogleGenerativeAI(apiKey);
-} else {
-  console.warn('⚠️ VITE_GEMINI_API_KEY not set. AI features disabled.');
+async function callAI(prompt: string): Promise<string> {
+  try {
+    const res = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    if (!res.ok) return 'AI unavailable.';
+    const data = await res.json();
+    return data.text || 'AI unavailable.';
+  } catch {
+    return 'AI unavailable.';
+  }
 }
 
-export const generateInsight = async (context: string, data: any): Promise<string> => {
-  if (!genAI) {
-    return "⚠️ Configure VITE_GEMINI_API_KEY in .env to enable AI insights.";
-  }
+export async function generateInsight(type: string, data: any): Promise<string> {
+  const prompts: Record<string, string> = {
+    inventory: `Menswear retail analyst. One sharp insight for ICON Amsterdam inventory. Data: ${JSON.stringify(data).slice(0,2000)}. Max 60 words. No markdown.`,
+    revenue: `DTC analyst. Estimate ICON Amsterdam monthly revenue from these signals. Data: ${JSON.stringify(data).slice(0,2000)}. Max 80 words.`,
+    ads: `Performance marketing. One tactical insight on ICON Amsterdam Meta ads. Data: ${JSON.stringify(data).slice(0,1500)}. Max 50 words.`,
+  };
+  return callAI(prompts[type] || `Analyze ICON Amsterdam data (max 60 words): ${JSON.stringify(data).slice(0,2000)}`);
+}
 
-  try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-    
-    const prompt = `You are an AI analyst for ICON Amsterdam e-commerce. Analyze this data and provide ONE actionable insight.
+export async function chatWithAI(query: string, context: any): Promise<string> {
+  const prompt = `You are the AI assistant for ICON Amsterdam Command Center.
+User: "${query}"
+Context: ${JSON.stringify(context)}
+Helpful, concise, data-driven response. No markdown.`;
+  return callAI(prompt);
+}
 
-Context: ${context}
-Data: ${JSON.stringify(data).slice(0, 5000)}
+export async function analyzeDM(message: string): Promise<any> {
+  const prompt = `Analyze this DM for a high-ticket coaching program. Classify: Serious/High Potential/Tire-Kicker/Not Ready. Message: "${message}". Return JSON: {"classification":"string","confidence":number,"signals":["string"],"suggestedResponse":"string","reasoning":"string"}`;
+  const text = await callAI(prompt);
+  try { return JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'')); } catch { return { classification:'Error', confidence:0, signals:[], suggestedResponse:'Try again', reasoning:'Parse error' }; }
+}
 
-Requirements:
-- ONE insight only (2 sentences max)
-- Identify the MOST important anomaly, trend, or opportunity
-- Explain WHY it matters with specific numbers
-- Suggest WHAT action to take
-- Be direct and specific
+export async function generateLearningPath(profile: any): Promise<any> {
+  const prompt = `Generate a 10-module personalized learning path for: ${JSON.stringify(profile)}. Return JSON: {"modules":[{"id":"string","title":"string","week":number,"riskLevel":"low|medium|high","reasoning":"string"}],"predictedTimeline":"string","modifications":"string","recommendations":["string"]}`;
+  const text = await callAI(prompt);
+  try { return JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'')); } catch { return null; }
+}
 
-Format: "[Insight]. [Action recommendation]."`;
+export async function answerQuestion(question: string): Promise<any> {
+  const prompt = `E-commerce coach. Answer: "${question}". Return JSON: {"answer":"string","confidence":number,"decision":"AUTO-ANSWER|ESCALATE","contextSummary":"string","source":"string","suggestedFollowUp":"string"}`;
+  const text = await callAI(prompt);
+  try { return JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'')); } catch { return { answer:'', confidence:0, decision:'ESCALATE', contextSummary:'Error', source:'Error', suggestedFollowUp:'' }; }
+}
 
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    return response.text();
-  } catch (error: any) {
-    console.error('AI Error:', error);
-    if (error?.message?.includes('API_KEY')) {
-      return "⚠️ Invalid API key. Check VITE_GEMINI_API_KEY in .env";
-    }
-    return `⚠️ AI unavailable: ${error?.message || 'Unknown error'}`;
-  }
-};
+export async function analyzeOutcomes(data: any[]): Promise<any> {
+  const prompt = `Analyze e-commerce student data. Data: ${JSON.stringify(data.slice(0,20))}. Return JSON: {"atRiskCount":number,"patterns":["string"],"bottlenecks":["string"],"highPerformersCount":number,"insights":["string"]}`;
+  const text = await callAI(prompt);
+  try { return JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'')); } catch { return null; }
+}
 
-export const chatWithAI = async (
-  message: string,
-  contextData: any,
-  history: Array<{ role: string; content: string }>
-): Promise<string> => {
-  if (!genAI) {
-    return "I need an API key! Add VITE_GEMINI_API_KEY to your .env file. Get one at https://makersuite.google.com/app/apikey";
-  }
-
-  try {
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-3-flash-preview',
-      systemInstruction: `You are an AI business analyst for ICON Amsterdam e-commerce platform.
-
-Current business data: ${JSON.stringify(contextData).slice(0, 8000)}
-
-Rules:
-1. Be conversational and helpful
-2. Always cite specific numbers from the data
-3. Explain reasoning before recommendations
-4. Bold key metrics: **$12,543** or **234 units**
-5. Keep responses under 150 words
-6. Focus on actionable insights
-
-When asked about:
-- "risk" → find low stock, high churn, low ROAS
-- "opportunity" → find high LTV, high ROAS, fast sellers
-- "why" → analyze trends and explain causes`
-    });
-
-    const chatHistory = history.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }],
-    }));
-
-    const chat = model.startChat({ history: chatHistory });
-    const result = await chat.sendMessage(message);
-    return result.response.text();
-  } catch (error: any) {
-    console.error('Chat Error:', error);
-    return `⚠️ Error: ${error?.message || 'Try again'}`;
-  }
-};
+export async function repurposeContent(transcript: string): Promise<any> {
+  const prompt = `Repurpose this Q&A transcript. Transcript: "${transcript.substring(0,5000)}". Return JSON: {"summary":"string","keyTakeaways":["string"],"videoScripts":["string"],"instagramCarousel":["string"],"emailNewsletter":"string","faqEntries":[{"question":"string","answer":"string"}]}`;
+  const text = await callAI(prompt);
+  try { return JSON.parse(text.replace(/\`\`\`json|\`\`\`/g,'')); } catch { return null; }
+}
