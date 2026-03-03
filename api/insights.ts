@@ -1,22 +1,16 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const GEMINI_API_KEY = process.env.VITE_GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { context, data, type } = req.body || {};
+  const { data, type } = req.body || {};
 
   if (!GEMINI_API_KEY) {
-    return res.json({ 
-      insight: '⚠️ Gemini API key not configured. Set VITE_GEMINI_API_KEY in Vercel environment variables.',
-      source: 'error'
-    });
+    return res.json({ insight: 'API key not configured.', source: 'error' });
   }
 
   const prompts: Record<string, string> = {
@@ -24,61 +18,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 Live data: ${JSON.stringify(data)}
 
-Return ONLY a JSON array of exactly 3 objects. No markdown, no explanation, just JSON:
+Return ONLY a JSON array of exactly 3 objects. No markdown, no explanation, just raw JSON:
 [
   { "label": "SHORT_TITLE", "finding": "Specific finding with the actual number from the data", "action": "One concrete recommendation" },
   { "label": "SHORT_TITLE", "finding": "Specific finding with the actual number from the data", "action": "One concrete recommendation" },
   { "label": "SHORT_TITLE", "finding": "Specific finding with the actual number from the data", "action": "One concrete recommendation" }
 ]
-Rules: Use real numbers from the data. Labels must be 2-3 words max (e.g., "AD EFFICIENCY", "CATALOG GAP", "REVIEW VELOCITY"). Each finding must reference a specific metric. No asterisks, no markdown.`,
+Rules: Use real numbers from the data. Labels max 3 words (e.g. "AD EFFICIENCY", "CATALOG GAP"). No asterisks, no markdown. Just JSON.`,
 
-    inventory: `You are a menswear retail analyst. Analyze ICON Amsterdam's product catalog data and provide ONE sharp inventory intelligence insight.
+    inventory: `You are a menswear retail analyst. Analyze ICON Amsterdam's product catalog and give ONE sharp insight. Data: ${JSON.stringify(data).slice(0, 2000)}. Max 60 words. No markdown. Specific numbers only.`,
 
-Data: ${JSON.stringify(data).slice(0, 3000)}
+    revenue: `You are a DTC revenue analyst. Based on these signals from ICON Amsterdam, provide: 1) revenue estimate 2) top driver 3) growth opportunity. Data: ${JSON.stringify(data).slice(0, 2000)}. Max 80 words. No markdown. State these are estimates.`,
 
-Requirements:
-- Lead with the most surprising or actionable finding
-- Reference specific product types and percentages
-- Give ONE concrete recommendation for Samuel Onuha
-- Maximum 60 words
-- Tone: confident, data-driven, like a McKinsey analyst`,
-
-    revenue: `You are a DTC revenue analyst. Based on public signals, estimate ICON Amsterdam's monthly revenue.
-
-Data: ${JSON.stringify(data).slice(0, 3000)}
-
-Provide:
-1. Revenue estimate range (month)
-2. Top revenue driver
-3. Biggest growth opportunity
-Maximum 80 words. Be specific with numbers. State clearly these are estimates from public signals.`,
-
-    ads: `You are a performance marketing expert. Analyze ICON Amsterdam's Meta advertising signals and provide the most important insight.
-
-Data: ${JSON.stringify(data).slice(0, 2000)}
-
-One insight, max 50 words. Reference specific metrics. Give ONE tactical recommendation.`,
+    ads: `Performance marketing expert. Analyze ICON Amsterdam's Meta ad signals and give ONE tactical insight. Data: ${JSON.stringify(data).slice(0, 1500)}. Max 50 words. No markdown.`,
   };
 
-  const prompt = prompts[type] || `Analyze this data for ICON Amsterdam and provide one key insight (max 60 words): ${JSON.stringify(data).slice(0, 2000)}`;
+  const prompt = prompts[type] || `Analyze this ICON Amsterdam data and give one key insight (max 60 words, no markdown): ${JSON.stringify(data).slice(0, 2000)}`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 300 }
-        })
-      }
-    );
-
-    const result = await response.json() as any;
-    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to generate insight.';
-    
-    res.json({ insight: text, source: 'gemini', model: 'gemini-2.0-flash' });
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+    const result = await model.generateContent(prompt);
+    const text = result.response.text().trim();
+    res.json({ insight: text, source: 'gemini', model: 'gemini-3-flash-preview' });
   } catch (err: any) {
     res.json({ insight: `Analysis unavailable: ${err.message}`, source: 'error' });
   }
