@@ -8,7 +8,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 's-maxage=3600');
 
   try {
-    // Fetch all products via Shopify JSON API (public endpoint)
     const response = await fetch(`${SHOPIFY_BASE}/products.json?limit=250`, {
       headers: { 'User-Agent': UA }
     });
@@ -24,14 +23,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       compareAtPrice: parseFloat(p.variants?.[0]?.compare_at_price || '0') || null,
       image: p.images?.[0]?.src || null,
       handle: p.handle,
-      tags: p.tags?.split(',').map((t: string) => t.trim()).filter(Boolean) || [],
-      availableVariants: p.variants?.filter((v: any) => v.available !== false).length || 0,
-      totalVariants: p.variants?.length || 1,
+      tags: Array.isArray(p.tags) ? p.tags : (typeof p.tags === 'string' ? p.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : []),
+      availableVariants: (p.variants || []).filter((v: any) => v.available !== false).length,
+      totalVariants: (p.variants || []).length || 1,
       publishedAt: p.published_at,
       vendor: p.vendor,
     }));
 
-    // Aggregate stats
     const typeBreakdown: Record<string, { count: number; avgPrice: number; items: string[] }> = {};
     for (const p of products) {
       const type = p.type || 'Other';
@@ -45,27 +43,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const prices = products.map((p: any) => p.price).filter((p: number) => p > 5);
-    const avgPrice = prices.reduce((a: number, b: number) => a + b, 0) / prices.length;
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
+    const avgPrice = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
 
-    // On sale items
-    const onSale = products.filter((p: any) => p.compareAtPrice && p.compareAtPrice > p.price);
-    
-    // New arrivals (published in last 30 days)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const newArrivals = products.filter((p: any) => new Date(p.publishedAt).getTime() > thirtyDaysAgo);
+    const onSale = products.filter((p: any) => p.compareAtPrice && p.compareAtPrice > p.price);
 
     res.json({
       source: 'live',
       fetchedAt: new Date().toISOString(),
       totalProducts: products.length,
-      products: products.slice(0, 50), // Top 50 for display
+      products: products.slice(0, 50),
       typeBreakdown,
       stats: {
         avgPrice: Math.round(avgPrice),
-        minPrice,
-        maxPrice,
+        minPrice: prices.length > 0 ? Math.min(...prices) : 0,
+        maxPrice: prices.length > 0 ? Math.max(...prices) : 0,
         onSaleCount: onSale.length,
         newArrivalsCount: newArrivals.length,
       }
