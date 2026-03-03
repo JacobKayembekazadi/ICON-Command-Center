@@ -82,7 +82,7 @@ export const Ads = () => {
 
         {(insight || insightLoading) && (
           <div style={{ background: '#111111', border: '1px solid #1A1A1A', borderLeft: '2px solid #C9A84C', padding: '20px' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '10px' }}>Gemini Ad Intelligence</p>
+            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '10px' }}>ICON Ad Intelligence</p>
             {insightLoading ? (
               <div style={{ height: 14, background: '#1A1A1A', width: '60%' }} className="animate-pulse" />
             ) : (

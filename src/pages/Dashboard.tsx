@@ -151,7 +151,7 @@ export const Dashboard = () => {
               <SectionHeader>AI Intelligence Summary</SectionHeader>
               <div style={{ background: '#111111', border: '1px solid #1A1A1A', borderLeft: '2px solid #C9A84C', padding: '24px' }}>
                 <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '12px' }}>
-                  Gemini — Top 3 Insights for Samuel Onuha
+                  ICON Intelligence — Top 3 Insights
                 </p>
                 {insightLoading ? (
                   <div className="space-y-3">

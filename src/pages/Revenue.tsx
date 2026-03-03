@@ -81,7 +81,7 @@ export const Revenue = () => {
 
         {insight && (
           <div style={{ background: '#111111', border: '1px solid #1A1A1A', borderLeft: '2px solid #C9A84C', padding: '20px' }}>
-            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '10px' }}>Gemini Revenue Analysis</p>
+            <p style={{ fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '10px' }}>ICON Revenue Intelligence</p>
             <p style={{ color: '#AAAAAA', fontSize: '13px', lineHeight: 1.7, whiteSpace: 'pre-line' }}>{insight}</p>
           </div>
         )}
