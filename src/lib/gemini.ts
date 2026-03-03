@@ -16,7 +16,7 @@ export const generateInsight = async (context: string, data: any): Promise<strin
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-preview' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
     
     const prompt = `You are an AI analyst for ICON Amsterdam e-commerce. Analyze this data and provide ONE actionable insight.
 
@@ -55,7 +55,7 @@ export const chatWithAI = async (
 
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-3.1-flash-preview',
+      model: 'gemini-3-flash-preview',
       systemInstruction: `You are an AI business analyst for ICON Amsterdam e-commerce platform.
 
 Current business data: ${JSON.stringify(contextData).slice(0, 8000)}
