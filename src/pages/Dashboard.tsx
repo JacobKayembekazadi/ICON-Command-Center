@@ -33,7 +33,7 @@ const SectionHeader = ({ children }: { children: React.ReactNode }) => (
 export const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [metrics, setMetrics] = useState<any>(null);
-  const [insight, setInsight] = useState('');
+  const [insight, setInsight] = useState<any[]>([]);
   const [insightLoading, setInsightLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
@@ -65,7 +65,13 @@ export const Dashboard = () => {
       setLastUpdated(new Date());
 
       const ig = await fetchInsight('dashboard', summaryData);
-      setInsight(ig);
+      try {
+        const clean = ig.replace(/```json|```/g, '').trim();
+        const parsed = JSON.parse(clean);
+        setInsight(Array.isArray(parsed) ? parsed : []);
+      } catch {
+        setInsight([{ label: 'ANALYSIS', finding: ig, action: '' }]);
+      }
     } finally {
       setLoading(false);
       setInsightLoading(false);
@@ -153,8 +159,16 @@ export const Dashboard = () => {
                       <div key={i} style={{ height: 14, background: '#1A1A1A', width: `${60 + i * 10}%` }} className="animate-pulse" />
                     ))}
                   </div>
-                ) : insight ? (
-                  <div style={{ color: '#AAAAAA', fontSize: '13px', lineHeight: 1.7, whiteSpace: 'pre-line' }}>{insight}</div>
+                ) : insight.length > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: '#1A1A1A' }}>
+                    {insight.map((ins: any, i: number) => (
+                      <div key={i} style={{ background: '#111111', padding: '20px', borderTop: '1px solid #C9A84C' }}>
+                        <p style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#C9A84C', marginBottom: '10px' }}>{ins.label}</p>
+                        <p style={{ fontSize: '12px', color: '#F5F5F5', lineHeight: 1.6, marginBottom: '10px' }}>{ins.finding}</p>
+                        {ins.action && <p style={{ fontSize: '11px', color: '#555555', borderTop: '1px solid #1A1A1A', paddingTop: '8px' }}>→ {ins.action}</p>}
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <p style={{ color: '#444444', fontSize: '12px' }}>Configure VITE_GEMINI_API_KEY in Vercel to enable AI insights.</p>
                 )}

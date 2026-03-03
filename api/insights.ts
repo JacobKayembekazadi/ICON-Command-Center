@@ -20,22 +20,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const prompts: Record<string, string> = {
-    dashboard: `You are an elite DTC brand analyst. Analyze ICON Amsterdam's business intelligence data and provide exactly 3 sharp, actionable insights. 
+    dashboard: `You are an elite DTC brand analyst for ICON Amsterdam, Samuel Onuha's $30M Dutch menswear brand.
 
-ICON Amsterdam is Samuel Onuha's $30M Dutch menswear brand.
+Live data: ${JSON.stringify(data)}
 
-Data: ${JSON.stringify(data).slice(0, 4000)}
-
-Format your response as exactly 3 bullet points. Each must:
-- Start with a bold insight title in caps (e.g., **LOGISTICS GAP**)
-- State the specific metric or finding
-- Give ONE concrete action recommendation
-- Be under 40 words per bullet
-
-Example format:
-• **LOGISTICS GAP**: [finding]. Action: [recommendation].
-• **GROWTH LEVER**: [finding]. Action: [recommendation].
-• **RISK SIGNAL**: [finding]. Action: [recommendation].`,
+Return ONLY a JSON array of exactly 3 objects. No markdown, no explanation, just JSON:
+[
+  { "label": "SHORT_TITLE", "finding": "Specific finding with the actual number from the data", "action": "One concrete recommendation" },
+  { "label": "SHORT_TITLE", "finding": "Specific finding with the actual number from the data", "action": "One concrete recommendation" },
+  { "label": "SHORT_TITLE", "finding": "Specific finding with the actual number from the data", "action": "One concrete recommendation" }
+]
+Rules: Use real numbers from the data. Labels must be 2-3 words max (e.g., "AD EFFICIENCY", "CATALOG GAP", "REVIEW VELOCITY"). Each finding must reference a specific metric. No asterisks, no markdown.`,
 
     inventory: `You are a menswear retail analyst. Analyze ICON Amsterdam's product catalog data and provide ONE sharp inventory intelligence insight.
 
