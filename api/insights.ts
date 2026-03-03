@@ -69,7 +69,7 @@ One insight, max 50 words. Reference specific metrics. Give ONE tactical recomme
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -83,7 +83,7 @@ One insight, max 50 words. Reference specific metrics. Give ONE tactical recomme
     const result = await response.json() as any;
     const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to generate insight.';
     
-    res.json({ insight: text, source: 'gemini', model: 'gemini-2.0-flash-exp' });
+    res.json({ insight: text, source: 'gemini', model: 'gemini-2.0-flash' });
   } catch (err: any) {
     res.json({ insight: `Analysis unavailable: ${err.message}`, source: 'error' });
   }
