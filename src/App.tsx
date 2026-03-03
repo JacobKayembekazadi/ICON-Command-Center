@@ -5,10 +5,12 @@ import { Inventory } from '@/pages/Inventory';
 import { Revenue } from '@/pages/Revenue';
 import { Customers } from '@/pages/Customers';
 import { Ads } from '@/pages/Ads';
+import { InstallPrompt } from '@/components/InstallPrompt';
 
 function App() {
   return (
     <Router>
+      <InstallPrompt />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/inventory" element={<Inventory />} />
