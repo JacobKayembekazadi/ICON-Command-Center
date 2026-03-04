@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Card } from '@/components/ui/Card';
-import { fetchInventory, fetchAds, fetchReviews, fetchRevenue, fetchInsight } from '@/lib/liveData';
+import { fetchInventory, fetchAds, fetchReviews, fetchRevenue, fetchInsight, invalidateCache } from '@/lib/liveData';
 import { RefreshCw } from 'lucide-react';
 
 const MetricCard = ({ title, value, sub }: any) => (

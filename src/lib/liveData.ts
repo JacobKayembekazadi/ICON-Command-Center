@@ -1,30 +1,30 @@
 // Live data fetching utilities for ICON Amsterdam dashboard
+// Cache: 5 minute TTL — data fetched once per session, instant page switches
 
-export async function fetchInventory() {
-  const res = await fetch('/api/inventory');
-  if (!res.ok) throw new Error(`Inventory API error: ${res.status}`);
-  return res.json();
+const CACHE_TTL = 5 * 60 * 1000;
+
+interface CacheEntry { data: any; ts: number; }
+const cache: Record<string, CacheEntry> = {};
+
+async function cachedFetch(key: string, url: string, opts?: RequestInit) {
+  const now = Date.now();
+  if (cache[key] && now - cache[key].ts < CACHE_TTL) return cache[key].data;
+  const res = await fetch(url, opts);
+  if (!res.ok) throw new Error(`API error ${res.status}: ${url}`);
+  const data = await res.json();
+  cache[key] = { data, ts: now };
+  return data;
 }
 
-export async function fetchAds() {
-  const res = await fetch('/api/ads');
-  if (!res.ok) throw new Error(`Ads API error: ${res.status}`);
-  return res.json();
-}
-
-export async function fetchReviews() {
-  const res = await fetch('/api/reviews');
-  if (!res.ok) throw new Error(`Reviews API error: ${res.status}`);
-  return res.json();
-}
-
-export async function fetchRevenue() {
-  const res = await fetch('/api/revenue');
-  if (!res.ok) throw new Error(`Revenue API error: ${res.status}`);
-  return res.json();
-}
+export async function fetchInventory() { return cachedFetch('inventory', '/api/inventory'); }
+export async function fetchAds() { return cachedFetch('ads', '/api/ads'); }
+export async function fetchReviews() { return cachedFetch('reviews', '/api/reviews'); }
+export async function fetchRevenue() { return cachedFetch('revenue', '/api/revenue'); }
 
 export async function fetchInsight(type: string, data: any): Promise<string> {
+  const key = `insight_${type}`;
+  const now = Date.now();
+  if (cache[key] && now - cache[key].ts < CACHE_TTL) return cache[key].data;
   try {
     const res = await fetch('/api/insights', {
       method: 'POST',
@@ -33,11 +33,15 @@ export async function fetchInsight(type: string, data: any): Promise<string> {
     });
     if (!res.ok) return 'AI insight unavailable.';
     const json = await res.json();
-    return json.insight || 'AI insight unavailable.';
+    const insight = json.insight || 'AI insight unavailable.';
+    cache[key] = { data: insight, ts: now };
+    return insight;
   } catch {
     return 'AI insight unavailable.';
   }
 }
+
+export function invalidateCache() { Object.keys(cache).forEach(k => delete cache[k]); }
 
 export function formatEUR(value: number): string {
   if (value >= 1_000_000) return `€${(value / 1_000_000).toFixed(1)}M`;
